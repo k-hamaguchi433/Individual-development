@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+
+<link href="/css/reset.css" th:href="@{/css/reset.css}" rel="stylesheet" />
+<link href="/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+
+<title>Sample Web</title>
+</head>
+<body>
+
+<header th:insert="fragments/page_header::pageHeader"></header>
+
+<main>
+
+	<div class="container history">
+		<h2>購入履歴</h2>
+		
+		<!-- th:ifの条件で、表示する内容を切り分け -->
+		<div class="noData" th:if="${purchaseHistory == null || purchaseHistory.size() == 0}">
+			<p class="info">購入履歴はありません。</p>
+		</div>
+		<div>
+			
+		</div>
+		<table class="history" th:if="${purchaseHistory != null && purchaseHistory.size() > 0}">
+			<tr>
+				<th>購入日時</th><th>商品名</th><th>価格(円)</th><th>個数</th><th>宛名</th><th>宛先住所</th>
+			</tr>
+			<!-- PurchaseHistoryControllerからreturnされたリストpurchaseHistoryをth:each文で表示 -->
+			<tr th:each="history: ${purchaseHistory}">
+				<td th:text="${history.purchasedAt}"/>
+				<td th:text="${history.productName}" />
+				<td th:text="${history.price}" />
+				<td th:text="${history.productCount}" />
+				<td th:text="${history.familyName}+' '+${history.firstName}" />
+				<td class="address" th:text="${history.address}" />
+			</tr>
+		</table>
+		<div class="buttonArea">
+			<button id="deleteButton">削除</button>
+		</div>
+	
+	</div>
+
+</main>
+
+<script	th:inline="javascript">
+/*<![CDATA[*/
+$(() => {
+	$('#deleteButton').on('click', (event) => {
+		//let purchaseHistory = /*[[${purchaseHistory}]]*/ null;
+		//let historyTable = $(event.target).parent().parent().find('table');
+		
+		$.ajax({
+			type: 'POST',
+			url: '/sampleweb/history/delete',
+			contentType: 'application/json'
+		})
+		.then((result) => {
+			location.replace(/*[[@{/sampleweb/history/}]]*/ '/sampleweb/history/');
+		}, () => {
+			alert('Error: ajax connection failed.');
+		});
+		
+		//purchaseHistoryをnullにする
+	});
+	
+	
+})
+
+/*]]>*/
+</script>
+</body>
+</html>

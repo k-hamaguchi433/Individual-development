@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+
+<link href="/css/reset.css" th:href="@{/css/reset.css}" rel="stylesheet" />
+<link href="/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+
+<title>Sample Web</title>
+</head>
+<body>
+
+<header th:insert="fragments/page_header::pageHeader"></header>
+
+<main>
+
+	<div class="container cart">
+		
+		<!--
+		<div th:if="${destinations == null || destinations.size() == 0}">
+			<p class="info">宛先情報がありません。新規登録してください。</p>
+		</div>
+		<div class="completed hidden">
+			<p class="info">決済が完了しました。</p>
+		</div>
+		<div th:if="${destinations != null && destinations.size() > 0}">
+			<h2>宛先を選択し、決済を完了します。</h2>
+			<p class="info">宛先の新規登録、削除も可能です。</p>
+		</div>
+		-->
+		
+		<div>
+			<h2 th:if="${destinations != null && destinations.size() > 0}">宛先を選択し、決済を完了します。</h2>
+			<p class="info"	th:if="${destinations != null && destinations.size() > 0}">宛先の新規登録、削除も可能です。</p>
+			<p class="info"	th:if="${destinations == null || destinations.size() == 0}">宛先情報がありません。新規登録してください。</p>
+		</div>
+
+		<table class="destination" th:if="${destinations != null && destinations.size() > 0}">
+			<tr>
+				<th>選択</th><th>宛先氏名</th><th>住所</th><th>電話番号</th>
+			</tr>
+			<tr th:each="destination: ${destinations}">
+				<td>
+				 <input type="radio" class="radio" checked th:value="${destination.id}" />
+				</td>
+				<td th:text="${destination.familyName}+'　'+${destination.firstName}"/>
+				<td th:text="${destination.address}"/>
+				<td th:text="${destination.telNumber}"/>
+			</tr>
+		</table>
+		<div class="buttonArea" th:if="${destinations != null && destinations.size() > 0}">
+			<button id="destinationButton" >決済</button>
+		</div>
+	
+	</div>
+
+</main>
+<!-- 
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+	
+	/*]]>*/
+	</script>
+	で、Tymeleafから、javaScriptへ値を出力できる
+ -->
+<script th:inline="javascript">
+/*<![CDATA[*/
+$(() => {
+	$('#destinationButton').on('click',() => {
+		let destinationIds = $('.radio:checked').val();
+		
+		$.ajax({
+			type: 'POST',
+			url: '/sampleweb/settlement/complete',
+			data: JSON.stringify(destinationIds),
+			contentType: 'application/json'
+		})
+		.then((result) => {
+			location.replace(/*[[@{/sampleweb/history/}]]*/ '/sampleweb/history/');
+		}, () => {
+			alert('Error: ajax connection failed.');
+		});
+	});
+})
+/*]]>*/
+</script>
+</body>
+</html>

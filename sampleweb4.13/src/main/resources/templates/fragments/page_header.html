@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<title>Insert title here</title>
+</head>
+<body>
+
+<th:block th:fragment="pageHeader">
+	<script src="http://code.jquery.com/jquery-3.4.1.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+	<link rel="stylesheet"
+			href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+	<script src="/js/util/stringUtil.js" th:src="@{/js/util/stringUtil.js}"></script>
+	<script src="/js/util/validator.js" th:src="@{/js/util/validator.js}"></script>
+	<script src="/js/dialogConfig.js" th:src="@{/js/dialogConfig.js}"></script>
+	<!-- dialogConfig.jsのdialogConfigのloginErrorを呼び出す( $ = jQuery )-->
+	<script th:inline="javascript">
+		/*$ → jQuery
+		*$(function(){....}) → HTML要素を読み込んでからjQuery処理を実行するという意味。functionは省略可
+		*基本構文は
+		$((){
+			$("セレクタ").メソッド(引数);
+		})
+		セレクタ→「id」「クラス」「子」を記述
+		メソッド→指定したセレクタに対して何の処理を実行するかを指定
+		引数→メソッドの動作を制御
+		*/
+		$(() => {
+			$('#loginError').dialog(dialogConfig.loginError);
+			
+			/*ここからログイン機能*/
+			$('button#login').on('click', () => {
+				/* let 変数の宣言 */
+				let jsonString = {
+					/*右辺を左辺に代入。変数みたいなやつ*/
+					'userName': $('div.loginArea input[name=userName]').val(),
+					'password': $('div.loginArea input[name=password]').val()
+				};
+				/*ajax → JavaScriptの非同期通信を使って、XML形式のデータをWebサーバーから取得する
+				 *jqueryのajaxを呼び出し、AuthControllerのloginメソッドにアクセスする*/
+				$.ajax({
+					type: 'POST',
+					url : '/sampleweb/auth/login',
+					/** JSON.stringify → 変数jsonString のオブジェクトデータをJSON化*/
+					data: JSON.stringify(jsonString),
+					/**MIMEタイプ　このファイルはこんな種類(jsonファイル)ですよの情報 */
+					contentType: 'application/json',
+					datatype: 'json',
+					scriptCharset: 'utf-8'
+				})
+				.then((result) => {
+					/*JSON.parase JSON文字をオブジェクトデータの形式に変換(JSON.stringifyの逆)*/
+					let user = JSON.parse(result);
+					/*userの戻り値が空なら、loginErrorダイアログを開く
+					そうでなければ、ログイン成功*/
+					if (isEmpty(user)) {
+						$('#hiddenUserName').val('');
+						$('#loginError').dialog('open');
+					}else{
+						/*ヘッダーにユーザーネームを保持*/
+						$('#hiddenUserName').val(user['userName']);
+						//login関数処理
+						login(user);
+					}
+				},() => {
+					alert('Error: ajax connection failed.');
+				});
+			});
+						
+
+			$('button#logout').on('click',() => {
+				$.ajax({
+					type: 'POST',
+					url: '/sampleweb/auth/logout',
+					scriptCharset: 'utf-8'
+				})
+				.then((result) => {
+					//ヘッダーに保持していたユーザーネームを削除
+					$('#hiddenUserName').val('');
+					//logout関数処理
+					logout();
+					alert('ログアウトしました。');
+					//sampleweb/ページを再読み込み
+					location.replace('/sampleweb/');
+				},() =>{
+					alert('Error: ajax connection failed.');
+				});		
+			});
+			
+				
+		});
+		
+		/* AuthControllerでJavaオブジェクトからJSONへの変換された変数userを引数とする*/
+		function login(user) {
+			/* 変数userNameを作成(let)、.wecomeMsgセレクタに対し、
+			.textメソッド(引数`ようこそ！ ${userName} さん`)の処理を行う。
+			.text → (引数)内のテキストに.wecomeMsgセレクタを書き換える*/
+			let userName = user['userName'];
+			$('.welcomeMsg').text(`ようこそ！ ${userName} さん`);
+				
+			/*.prop → 属性値の取得が出来る。以下の例だと、HTML要素であるclassから、classに指定されている属性の「${loginSession == null || login～」
+			を取得している*/
+			/*.addClass → 任意の要素に任意のタイミングで指定したクラスを追加する*/
+			/*.removeClass → 任意の要素に任意のタイミングで指定したクラスを削除する*/
+			/*もし、[条件→]button#loginのclass(${loginSession == null || loginSession.getUserName() == null ? '' : 'hidden'}と
+			${loginSession == null || loginSession.getUserName() == null ? 'hidden' : ''})が空(isEnpty)ならば、
+			[処理1→]buttonのloginidセレクタにhiddenクラスを追加(.addClass)する。
+			[処理2→]buttonのlogoutidセレクタからhiddenクラスを削除(.removeClass)する。
+			hiddenクラスを付与することによりcssの.hiddenに設定されているdispray.noneが作動する*/
+			if(isEmpty($('button#login').prop('class'))){
+				$('button#login').addClass('hidden');
+				$('button#logout').removeClass('hidden');
+			}
+			//mypageMenuidセレクタからhiddenクラスを削除(.removeClass)する。
+			$('#mypageMenu').removeClass('hidden');
+			
+			//inputに入力された文字列を消去する
+			$('div.loginArea input[name=userName]').val('');
+			$('div.loginArea input[name=password]').val('');
+		}	
+		
+		function logout(){
+			$('.welcomeMsg').text(`ようこそ！ ゲスト さん`);
+					
+			if(isEmpty($('button#logout').prop('class'))){
+				$('button#login').removeClass('hidden');
+				$('button#logout').addClass('hidden');
+			}
+			if(isEnpty($('#MypageMenu').prop('class'))){
+				$('#MypageMenu').addClass('hidden');
+			}
+			
+			//inputに入力された文字列を消去する			
+			$('div.loginArea input[name=userName]').val('');
+			$('div.loginArea input[name=password]').val('');
+		}	
+		
+		
+	</script>
+	
+	<div class="headerTop">
+		<h1 class="logo"><a href="/sampleweb/">Florist YU</a></h1>
+		<span class="signup">
+			<a href="/sampleweb/user/" th:href="@{/sampleweb/user/}">
+			新規ユーザ登録はこちら
+			</a>
+		</span>
+		 <span class="welcomeMsg" 
+			 th:text="'ようこそ！ '+${loginSession == null || loginSession.getUserName() == null ? 'ゲスト さん' : loginSession.getUserName() +' さん'}">
+		 </span>
+		
+	</div>
+	 
+	<nav>
+		<div class="loginArea">
+			<input type="text" name="userName" />
+			<input type="password" name="password" />
+			<input type="hidden" id="hiddenUserName" value="" />
+			<button id="login" th:class="${loginSession == null || loginSession.getUserName() == null ? '' : 'hidden'}">ログイン</button>
+			<button id="logout" th:class="${loginSession == null || loginSession.getUserName() == null ? 'hidden' : ''}">ログアウト</button>
+		</div>
+		<ul class="menu">
+			<li id="cartMenu"><a href="/sampleweb/cart/" th:href="@{/sampleweb/cart/}">カート</a></li>
+			<li id="MypageMenu" th:class="${loginSession == null || loginSession.getUserName() == null ? 'hidden' : ''}"><a href="/sampleweb/mypage/">マイページ</a></li>
+		</ul>
+	</nav>
+		<!-- Modal Dialog (ログインエラー) -->
+	<div th:insert="fragments/dialog_login_error::dialogLoginError"></div>
+	
+</th:block>
+
+
+</body>
+</html>

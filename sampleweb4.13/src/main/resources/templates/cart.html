@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+
+<link href="/css/reset.css" th:href="@{/css/reset.css}" rel="stylesheet" />
+<link href="/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+
+<title>Sample Web</title>
+</head>
+<body>
+
+<header th:insert="fragments/page_header::pageHeader"></header>
+
+<main>
+
+<div class="container cart">
+		<h2>カート</h2>
+	
+		<!-- th:ifの条件で、表示する内容を切り分け -->
+		<div class="noData"	th:if="${carts == null || carts.size() == 0}">
+			<p class="info">カート情報はありません。</p>
+		</div>
+		
+		<table class="cart"	th:if="${carts != null && carts.size() > 0}">
+			<tr>
+				<th>選択</th><th>画像</th><th>商品名</th><th>価格(円)</th><th>個数</th><th>小計(円)</th>
+			</tr>
+			<!-- CartControllerからreturnされたリストcartsをth:each文で表示 -->
+			<tr th:each="cart: ${carts}">
+				<td><input type="checkbox" name="id"	class="checkList" th:value="${cart.id}"/></td>
+				<td><img class="itemImage"	th:src="@{{imagePath} (imagePath=${cart.imageFullPath}) }" /></td>
+				<td th:text="${cart.productName}" />
+				<td class="number" th:text="${cart.price}" />
+				<td class="productCount number" th:text="${cart.productCount}" />
+				<td class="subtotal number" th:text="${cart.subtotal}" />
+			</tr>
+			<tr>
+				<td class="totalArea"></td>
+				<td class="totalArea"></td>
+				<td class="totalArea">合計(円)</td>
+				<td class="totalArea"></td>
+				<td class="totalArea" id="totalCount"></td>
+				<td class="totalArea" id="totalPrice"></td>
+			</tr>
+		</table>
+		<div class="buttonArea" th:if="${carts != null && carts.size() > 0}">
+			<!-- disabled → 設定した要素を非活性(使えなくする) -->
+			<button id="deleteButton" disabled>削除</button>
+			<form action="/sampleweb/settlement/" th:action="@{/sampleweb/settlement/}">
+				<button id="settlementButton" class="buyButton">購入</button>
+			</form>
+		</div>
+	</div>
+</main>
+
+<script	th:inline="javascript">
+/*<![CDATA[*/
+$(() => {
+	// 購入個数と金額の合計を算出し、合計欄に設定する
+	calcTotalArea();
+	
+	$('#deleteButton').on('click', () => {
+		let checkedList = $('.checkList:checked');	// チェックされたチェックボックスのオブジェクト　
+		let checkedIdList = []; // チェックされたチェックボックスのValue(${cart.id})を入れるリスト　[]でリストを初期化
+		for (checked of checkedList) {
+			checkedIdList.push($(checked).val()); //chekedIdListにcheckedの値を格納(.push)する
+		}
+		deleteCart(checkedList, checkedIdList);
+	});
+
+	$('.checkList').on('change', changeDisable); //.checkListの中身が変更されたときにchangeイベントが処理される
+	
+	$('#settlementButton').on('click', function() {
+		let userId = /*[[${loginSession.getUserId()}]]*/ 0;
+		if (userId == 0 && isEmpty($('#hiddenUserName').val())) {
+			alert("ログインしてください。");
+			return false;
+		}
+	});
+	
+});
+
+/**
+ * 選択されたカート情報を削除する。
+ * @param checkedList:選択されたチェックボックスのリスト、checkedIdList:選択されたチェックボックスの値のリスト
+ * @returns なし
+ */
+function deleteCart(checkedList, checkedIdList) {
+	$.ajax({
+		type: 'POST',
+		url: '/sampleweb/cart/delete',
+		data: JSON.stringify({'checkedIdList': checkedIdList}),
+		contentType: 'application/json',
+	})
+	.then((result) => {
+		for (checked of checkedList) {
+			$(checked).parent().parent().remove();
+		}
+		
+		let checkList = $('.checkList');
+		//.length文字列や配列の長さを取得
+		if (checkList.length == 0) {
+			location.replace('/sampleweb/cart/');
+		}
+		// 購入個数と金額の合計を算出し、合計欄に設定する
+		calcTotalArea();
+		// 削除ボタン非活性
+		changeDisable();
+	}, () => {
+		alert('Error: ajax connection failed.');
+	});		
+}
+
+/**
+ * 削除ボタンの活性非活性を変更する。
+ * @param チェックボックスが選択された際のevent
+ * @returns なし
+ */
+let changeDisable = (event) => {
+	let checkList = $('.checkList');
+	let disabled = true;
+	for (let check of checkList) {
+		if($(check).prop('checked')) {
+			disabled = false;
+			break;
+		}
+	}
+	$("#deleteButton").prop("disabled", disabled);
+}
+
+/**
+ * 合計個数、合計金額を計算する。
+ * @param なし
+ * @returns なし
+ */
+function calcTotalArea() {
+	let subtotalList = $('.subtotal');
+	let countList = $('.productCount');
+	let totalPrice = 0;
+	let totalCount = 0;
+	
+	$(subtotalList).each((i, subtotal) => {
+		totalPrice += parseInt($(subtotal).text());
+		totalCount += parseInt($(countList[i]).text());
+	});
+// 123～126行目と同じことをおこなっている
+// eachを使用することにより1つのループでできるため
+// 以降の処理はコメントアウトする
+// 	for (let subtotal of subtotalList) {
+// 		totalPrice += parseInt($(subtotal).text());
+// 	}
+// 	for (let count of countList) {
+// 		totalCount += parseInt($(count).text());
+// 	}
+
+	$('#totalPrice').text(totalPrice);
+	$('#totalCount').text(totalCount);
+}
+/*]]>*/
+</script>
+
+</body>
+</html>

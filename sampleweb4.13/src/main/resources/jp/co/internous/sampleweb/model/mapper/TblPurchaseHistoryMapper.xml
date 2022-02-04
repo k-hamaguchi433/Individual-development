@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.co.internous.sampleweb.model.mapper.TblPurchaseHistoryMapper">
+	<!-- insertでtbl_cartとmst_productからデータを持ってくる -->
+	<insert id="insert" >
+		INSERT INTO tbl_purchase_history (
+			user_id,
+			product_id,
+			product_count,
+			price,
+			destination_id
+			) 
+			SELECT
+				cart.user_id AS user_id,
+				cart.product_id AS product_id,
+				cart.product_count AS product_count,
+				product.price AS price,
+				#{destinationId}
+			FROM 
+				tbl_cart AS cart
+			JOIN 
+				mst_product AS product 
+			ON 
+				cart.product_id = product.id
+			WHERE 
+				cart.user_id = #{userId}	
+	</insert>
+	
+	<!-- tbl_purchase_history,mst_product,mst_destinationをJOINし、必要データを抽出するSQL -->
+	<select id="findByUserId" resultType="jp.co.internous.sampleweb.model.domain.dto.PurchaseHistoryDto">
+		SELECT
+
+			purchase.purchased_at AS purchased_at,
+			product.product_name AS product_name,
+			product.price AS price,
+			purchase.product_count AS product_count,
+			destination.family_name AS family_name,
+			destination.first_name AS first_name,
+			destination.address AS address
+		FROM 
+			tbl_purchase_history AS purchase
+		JOIN 
+			mst_product AS product 
+		ON 
+			purchase.product_id = product.id
+		JOIN
+			mst_destination AS destination
+		ON
+			purchase.destination_id = destination.id
+		WHERE 
+			purchase.user_id = #{userId} AND purchase.status = 1
+		ORDER BY
+			purchased_at DESC
+	</select>
+
+
+</mapper>

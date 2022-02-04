@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+
+<link href="/css/reset.css" th:href="@{/css/reset.css}" rel="stylesheet" />
+<link href="/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+
+<title>Sample Web</title>
+</head>
+<body>
+
+<header th:insert="fragments/page_header::pageHeader"></header>
+
+<main>
+	<div class="container">
+		<div class="noData" th:if="${products == null || products.size() == 0}">
+			<p class="info">検索結果はありません。</p>
+		</div>
+		<table class="top" th:if="${products != null && products.size() > 0}">
+			<!-- 			Mock Start -->
+		
+			<tr th:each="item:${products}">
+				<td class="image"><img class="itemImage" th:src="${item.imageFullPath}" /></td>
+				<td><label th:text="${item.productName}" ></td>
+				<td class="number" th:text="${item.price}" />
+				<td class="componentTd">
+					<input type="number" id="productCount" class="count number" value="0" />
+					<input type="hidden" id="productId" name="productId" th:value="${item.id}" />
+				</td>
+				<td class="componentTd"><button class="cartButton">追加</button></td>
+			</tr>
+		
+<!-- 			Mock End -->
+		</table>
+	</div>
+</main>
+
+<script>
+/*変数trはクリックした箇所の要素$(event.target)の親要素parent()の親要素parent()
+ *変数productIdは $(tr)以下の子孫要素から#productIdのvalue属性を取得する
+ *変数productCountは$(tr)以下の子孫要素から#productCountのvalue属性を取得する
+ *validator.jsのaddCart関数に引数を渡し処理する。*/
+$(() => {
+	$('.cartButton').on('click', (event) => {
+		let tr = $(event.target).parent().parent();
+		let productId = $(tr).find('#productId').val();
+		let productCount = $(tr).find('#productCount').val();
+		addCart(productId, productCount);
+	});	
+});
+
+
+</script>
+
+
+</body>
+</html>
