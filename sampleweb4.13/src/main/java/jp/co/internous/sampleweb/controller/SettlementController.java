@@ -63,11 +63,13 @@ public class SettlementController {
 	
 	/**
 	 * 決済処理を行う
-	 * @param destinationId 宛先情報id
+	 * @param id 宛先情報id
 	 * @return true:決済処理成功、false:決済処理失敗
 	 */
+	//@RequestParam formのパラメータ(name="id")を取得
 	@RequestMapping("/complete")
 	public String complete(@RequestParam int id, Model m) {
+		
 		int userId = loginSession.getUserId();
 		
 		int result = 0;
