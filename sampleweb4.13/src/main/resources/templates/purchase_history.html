@@ -39,7 +39,7 @@
 			</tr>
 		</table>
 		<div class="buttonArea">
-			<button id="deleteButton">削除</button>
+			<button id="deleteButton" th:if="${purchaseHistory != null && purchaseHistory.size() > 0}" >削除</button>
 		</div>
 	
 	</div>
@@ -50,8 +50,6 @@
 /*<![CDATA[*/
 $(() => {
 	$('#deleteButton').on('click', (event) => {
-		//let purchaseHistory = /*[[${purchaseHistory}]]*/ null;
-		//let historyTable = $(event.target).parent().parent().find('table');
 		
 		$.ajax({
 			type: 'POST',
@@ -63,13 +61,8 @@ $(() => {
 		}, () => {
 			alert('Error: ajax connection failed.');
 		});
-		
-		//purchaseHistoryをnullにする
 	});
-	
-	
 })
-
 /*]]>*/
 </script>
 </body>

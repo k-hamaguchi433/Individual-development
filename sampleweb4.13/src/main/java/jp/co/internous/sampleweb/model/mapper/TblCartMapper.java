@@ -1,7 +1,5 @@
 package jp.co.internous.sampleweb.model.mapper;
 
-
-
 import java.util.List;
 
 import org.apache.ibatis.annotations.Delete;
@@ -15,6 +13,10 @@ import org.apache.ibatis.annotations.Update;
 import jp.co.internous.sampleweb.model.domain.TblCart;
 import jp.co.internous.sampleweb.model.domain.dto.CartDto;
 
+/**
+ * tbl_cartにアクセスするDAO
+ * @author k-hamaguchi433
+ */
 @Mapper
 public interface TblCartMapper {
 	
@@ -72,9 +74,6 @@ public interface TblCartMapper {
 	 */
 	@Select("SELECT count(id) FROM tbl_cart WHERE user_id = #{userId} AND product_id = #{productId}")
 	int findCountByUserIdAndProuductId(@Param("userId") int userId, @Param("productId") int productId);
-	
-//	@Delete("DELETE FROM tbl_cart WHERE id = #{id}")
-//	int deleteById(@Param("id") int id);
 	
 	/**
 	 * IDを条件にカート情報を削除する

@@ -144,15 +144,6 @@ function calcTotalArea() {
 		totalPrice += parseInt($(subtotal).text());
 		totalCount += parseInt($(countList[i]).text());
 	});
-// 123～126行目と同じことをおこなっている
-// eachを使用することにより1つのループでできるため
-// 以降の処理はコメントアウトする
-// 	for (let subtotal of subtotalList) {
-// 		totalPrice += parseInt($(subtotal).text());
-// 	}
-// 	for (let count of countList) {
-// 		totalCount += parseInt($(count).text());
-// 	}
 
 	$('#totalPrice').text(totalPrice);
 	$('#totalCount').text(totalCount);

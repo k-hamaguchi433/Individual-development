@@ -19,9 +19,8 @@ import jp.co.internous.sampleweb.model.mapper.TblCartMapper;
 import jp.co.internous.sampleweb.model.session.LoginSession;
 
 /**
- * 
- * @author インターノウス
- *
+ * カート情報に関する処理のコントローラー
+ * @author k-hamaguchi433
  */
 @Controller
 @RequestMapping("/sampleweb/cart")
@@ -43,8 +42,8 @@ public class CartController {
 	 */
 	@RequestMapping("/")
 	public String index(Model m) {
-		//ログインの有無でユーザIDを検索
-		/*isLogined()がtrueならばgetUserId()、falseならばgetTmpUserId()を変数userIdに代入*/
+		// ログインの有無でユーザIDを検索
+		// isLogined()がtrueならばgetUserId()、falseならばgetTmpUserId()を変数userIdに代入
 		int userId = loginSession.isLogined() ? loginSession.getUserId() : loginSession.getTmpUserId();
 		
 		// カート情報を取得
@@ -54,9 +53,8 @@ public class CartController {
 		m.addAttribute("carts",carts);
 		m.addAttribute("loginSession", loginSession);
 		return "cart";
+		
 	}
-	
-	
 	
 	/**
 	 * カートに追加処理を行う
@@ -73,12 +71,12 @@ public class CartController {
 		f.setUserId(userId);
 		
 		// カートテーブルに挿入/更新
-		/* 引数がCartFormのコンストラクタをインスタンス化。
-		 * 変数resultに0を代入。
-		 * もし、（findCountByUserIdAndProuductId）すでにtbl_cartにuserIdとproductIdが同じものがあれば、
-		 * （update）ユーザーIDと商品IDを条件に個数を更新する
-		 * なければ、（insert）カート情報を登録する
-		 * resultの処理について、cartMapper.update(cart);の処理が成功したら、1を失敗したら-1を返す*/
+		// 引数がCartFormのコンストラクタをインスタンス化。
+		// 変数resultに0を代入。
+		// もし、（findCountByUserIdAndProuductId）すでにtbl_cartにuserIdとproductIdが同じものがあれば、
+		// （update）ユーザーIDと商品IDを条件に個数を更新する
+		// なければ、（insert）カート情報を登録する
+		// resultの処理について、cartMapper.update(cart);の処理が成功したら、1を失敗したら-1を返す
 		TblCart cart = new TblCart(f);
 		int result = 0;
 		if (cartMapper.findCountByUserIdAndProuductId(userId, f.getProductId()) > 0) {
@@ -100,27 +98,26 @@ public class CartController {
 	 * @param checkedIdList 選択したカート情報のIDリスト
 	 * @return true:削除成功、false:削除失敗
 	 */
-	/*
-	 * fromJson → JSONからJavaへ変換する（デシリアライズ）
-	 * cart.htmlから送られてきたJSON文字をjavaで処理するために、
-	 * キーにJOINデータである checkedIdList と、値にjavaで使えるデータとしてMap.classをセットする。
-	 * SQLにデータを送るためのListに値を格納する
-	 * cartMapper.deleteById(checkedIds)の結果（1か‐1）をresultに代入
-	 */
-	@SuppressWarnings("unchecked") //Javaでチェックされていない警告を抑制
+	// @SuppressWarnings("unchecked") Javaでチェックされていない警告を抑制
+	@SuppressWarnings("unchecked") 
 	@RequestMapping("/delete")
 	@ResponseBody
 	public boolean deleteCart(@RequestBody String checkedIdList) {
+		
 		int result = 0;
 		
+		// fromJson → JSONからJavaへ変換する（デシリアライズ）
+		// cart.htmlから送られてきたJSON文字をjavaで処理するために、
+		// キーにJOINデータである checkedIdList と、値にjavaで使えるデータとしてMap.classをセットする。
+		// SQLにデータを送るためのListに値を格納する
+		// cartMapper.deleteById(checkedIds)の結果（1か‐1）をresultに代入
 		Map<String, List<Integer>> map = gson.fromJson(checkedIdList, Map.class);
 		List<Integer> checkedIds = map.get("checkedIdList");
-//		 １回のSQLで消すように変更したためこちらはコメントアウトする
-//		for (String id : checkedIds) {
-//			result += cartMapper.deleteById(Integer.parseInt(id));
-//		}
+		
 		result = cartMapper.deleteById(checkedIds);
+		
 		return result > 0;
+		
 	}
 	
 	

@@ -18,8 +18,6 @@
 			<p class="info">検索結果はありません。</p>
 		</div>
 		<table class="top" th:if="${products != null && products.size() > 0}">
-			<!-- 			Mock Start -->
-		
 			<tr th:each="item:${products}">
 				<td class="image"><img class="itemImage" th:src="${item.imageFullPath}" /></td>
 				<td><label th:text="${item.productName}" ></td>
@@ -30,17 +28,15 @@
 				</td>
 				<td class="componentTd"><button class="cartButton">追加</button></td>
 			</tr>
-		
-<!-- 			Mock End -->
 		</table>
 	</div>
 </main>
 
 <script>
-/*変数trはクリックした箇所の要素$(event.target)の親要素parent()の親要素parent()
- *変数productIdは $(tr)以下の子孫要素から#productIdのvalue属性を取得する
- *変数productCountは$(tr)以下の子孫要素から#productCountのvalue属性を取得する
- *validator.jsのaddCart関数に引数を渡し処理する。*/
+//変数trはクリックした箇所の要素$(event.target)の親要素parent()の親要素parent()
+//変数productIdは $(tr)以下の子孫要素から#productIdのvalue属性を取得する
+//変数productCountは$(tr)以下の子孫要素から#productCountのvalue属性を取得する
+//validator.jsのaddCart関数に引数を渡し処理する。
 $(() => {
 	$('.cartButton').on('click', (event) => {
 		let tr = $(event.target).parent().parent();
@@ -50,9 +46,15 @@ $(() => {
 	});	
 });
 
+function addCart(productId, productCount) {
+	if (productCount == 0) {
+		alert("個数が0です。");
+		return ;	
+	}
+	location.replace(`/sampleweb/cart/add?productId=${productId}&productCount=${productCount}`);
+}
 
 </script>
-
 
 </body>
 </html>
