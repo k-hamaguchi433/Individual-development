@@ -13,70 +13,43 @@
 <header th:insert="fragments/page_header::pageHeader"></header>
 
 <main>
-	<div class="container cart">
-	
-		<div>
-			<h2 th:if="${destinations != null && destinations.size() > 0}">宛先を選択し、決済を完了します。</h2>
-			<p class="info"	th:if="${destinations != null && destinations.size() > 0}">宛先の新規登録、削除も可能です。</p>
-			<p class="info"	th:if="${destinations == null || destinations.size() == 0}">宛先情報がありません。新規登録してください。</p>
-		</div>
 
-		<!-- .size() コレクション(destinations)の要素数 -->
-		
-		<table class="destination" th:if="${destinations != null && destinations.size() > 0}">
-			<tr>
-				<th>選択</th><th>宛先氏名</th><th>住所</th><th>電話番号</th>
-			</tr>
-			<!--
-				th:each="destination, st: ${destinations}"　ステータス変数「th:each="変数名,ステータス変数:コレクション"」
-				　要素毎のステータスを取得することができる。例えば${ステータス変数.index}でインデックス(0始まりの現在の繰り返しインデックス)を取得することができる
-				th:checked="${st.index==0}" 　.index==0でチェックした際の初期値が0になる,項目のうち一つのみチェックを入れられる
-			-->
-			<tr th:each="destination, st:${destinations}">
-				<td>
-				 <input type="radio" name="id" class="radio" th:checked="${st.index==0}" th:value="${destination.id}" />
-				</td>
-				<td th:text="${destination.familyName}+'　'+${destination.firstName}"/>
-				<td th:text="${destination.address}"/>
-				<td th:text="${destination.telNumber}"/>
-			</tr>
-		</table>
-		<div class="buttonArea" th:if="${destinations != null && destinations.size() > 0}">
-			<button type="submit" id="destinationButton" >決済</button>
-		</div>
+	<form method="post" action="/sampleweb/settlement/complete" th:action="@{/sampleweb/settlement/complete}">
+		<div class="container cart">
 	
-	</div>
+			<div>
+				<h2 th:if="${destinations != null && destinations.size() > 0}">宛先を選択し、決済を完了します。</h2>
+				<p class="info"	th:if="${destinations != null && destinations.size() > 0}">宛先の新規登録、削除も可能です。</p>
+				<p class="info"	th:if="${destinations == null || destinations.size() == 0}">宛先情報がありません。新規登録してください。</p>
+			</div>
+
+			<!-- .size() コレクション(destinations)の要素数 -->
+			<table class="destination" th:if="${destinations != null && destinations.size() > 0}">
+				<tr>
+					<th>選択</th><th>宛先氏名</th><th>住所</th><th>電話番号</th>
+				</tr>
+				<!--
+					th:each="destination, st: ${destinations}"　ステータス変数「th:each="変数名,ステータス変数:コレクション"」
+					要素毎のステータスを取得することができる。例えば${ステータス変数.index}でインデックス(0始まりの現在の繰り返しインデックス)を取得することができる
+					th:checked="${st.index==0}" 　.index==0でチェックした際の初期値が0になる,項目のうち一つのみチェックを入れられる
+				-->
+				<tr th:each="destination, st:${destinations}">
+					<td>
+				 	<input type="radio" name="id" class="radio" th:checked="${st.index==0}" th:value="${destination.id}" />
+					</td>
+					<td th:text="${destination.familyName}+'　'+${destination.firstName}"/>
+					<td th:text="${destination.address}"/>
+					<td th:text="${destination.telNumber}"/>
+				</tr>
+			</table>
+			<div class="buttonArea" th:if="${destinations != null && destinations.size() > 0}">
+				<button type="submit" id="destinationButton" >決済</button>
+			</div>
+	
+		</div>
+	</form>
+
 </main>
-<!-- 
-	<script th:inline="javascript">
-	/*<![CDATA[*/
-	
-	/*]]>*/
-	</script>
-	で、Tymeleafから、javaScriptへ値を出力できる
- -->
-
-<script th:inline="javascript">
-/*<![CDATA[*/
-$(() => {
-	$('#destinationButton').on('click',() => {
-		let destinationIds = $('.radio:checked').val();
-		//$.ajaxいらない？？formからそのまま送信できるかも？？
-		$.ajax({
-			type: 'POST',
-			url: '/sampleweb/settlement/complete',
-			data: JSON.stringify(destinationIds),
-			contentType: 'application/json'
-		})
-		.then((result) => {
-			location.replace(/*[[@{/sampleweb/history/}]]*/ '/sampleweb/history/');
-		}, () => {
-			alert('Error: ajax connection failed.');
-		});
-	});
-})
-/*]]>*/
-</script>
 
 </body>
 </html>

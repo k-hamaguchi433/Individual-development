@@ -21,7 +21,7 @@ public interface TblPurchaseHistoryMapper {
 	 * @param parameter パラメーター(ユーザーID、宛先情報ID)
 	 * @return 登録件数
 	 */
-	int insert(@Param("userId") int userId, @Param("destinationId") int destinationId);
+	int insert(@Param("userId") int userId, @Param("destinationId") int id);
 
 	/**
 	 * ユーザーIDを条件に購入履歴情報を取得する
@@ -37,7 +37,5 @@ public interface TblPurchaseHistoryMapper {
 	 */
 	@Update("UPDATE tbl_purchase_history SET status = 0, updated_at = now() WHERE user_id = #{userId}")
 	int logicalDeleteByUserId(@Param("userId")int userId);
-	
-
 
 }

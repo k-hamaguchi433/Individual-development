@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.google.gson.Gson;
 
@@ -67,18 +67,11 @@ public class SettlementController {
 	 * @return true:決済処理成功、false:決済処理失敗
 	 */
 	@RequestMapping("/complete")
-	public String complete(@RequestBody String destinationIds, Model m) {
-		
-		// ユーザーIDを変数userIdに取得
+	public String complete(@RequestParam int id, Model m) {
 		int userId = loginSession.getUserId();
 		
-		//destinationIdsをJsonからjavaに変換
-		int destinationId = gson.fromJson(destinationIds, int.class);
-
-		// tbl_purchase_historyテーブルに決済情報を登録
-		// 登録成功した場合、商品購入履歴画面purchase_history.htmlに遷移
 		int result = 0;
-		result = purchaseHistoryMapper.insert(userId,destinationId);
+		result = purchaseHistoryMapper.insert(userId,id);
 		
 		if (result > 0) {
 			result = 0;
@@ -86,9 +79,8 @@ public class SettlementController {
 		}
 		
 		m.addAttribute("loginSession", loginSession);
-
-		return "settlement";
 		
+		return "forward:/sampleweb/history/";
 	}
 
 }
