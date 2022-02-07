@@ -54,6 +54,16 @@
 	</div>
 </main>
 
+<!-- 
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+	
+	/*]]>*/
+	</script>
+	で、Tymeleafから、javaScriptへ値を出力できる
+	let userId = /*[[${loginSession.getUserId()}]]*/ 0;は
+	Tymeleafから${loginSession.getUserId()}を呼び出している
+ -->
 <script	th:inline="javascript">
 /*<![CDATA[*/
 $(() => {
