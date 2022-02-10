@@ -14,6 +14,19 @@
 
 <main>
 	<div class="container">
+	
+		<!-- th:selected="${selected == category.id }" 選択されたcategory.idを<select name=category>に返す -->
+		<form name="searchForm" action="/sampleweb/searchItem/" >
+			カテゴリ
+			<select name=categoryId>
+				<option value="0"></option>
+				<option th:each="category:${categories}" th:selected="${selected == category.id }" th:value="${category.id}" th:text="${category.categoryName}" ></option>
+			</select>
+			商品名（部分一致）
+			<input type="text" name="keywords" th:value="${keywords}" />
+			<button type="submit">検索</button>
+		</form>
+		
 		<div class="noData" th:if="${products == null || products.size() == 0}">
 			<p class="info">検索結果はありません。</p>
 		</div>
@@ -32,7 +45,9 @@
 	</div>
 </main>
 
-<script>
+<script	th:inline="javascript">
+/*<![CDATA[*/
+
 //変数trはクリックした箇所の要素$(event.target)の親要素parent()の親要素parent()
 //変数productIdは $(tr)以下の子孫要素から#productIdのvalue属性を取得する
 //変数productCountは$(tr)以下の子孫要素から#productCountのvalue属性を取得する
@@ -43,7 +58,8 @@ $(() => {
 		let productId = $(tr).find('#productId').val();
 		let productCount = $(tr).find('#productCount').val();
 		addCart(productId, productCount);
-	});	
+	});		
+	
 });
 
 function addCart(productId, productCount) {
@@ -54,6 +70,7 @@ function addCart(productId, productCount) {
 	location.replace(`/sampleweb/cart/add?productId=${productId}&productCount=${productCount}`);
 }
 
+/*]]>*/
 </script>
 
 </body>

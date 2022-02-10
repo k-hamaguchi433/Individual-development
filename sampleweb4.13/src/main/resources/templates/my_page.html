@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+
+<link href="/css/reset.css" th:href="@{/css/reset.css}" rel="stylesheet" />
+<link href="/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+
+<title>Sample Web</title>
+</head>
+<body>
+
+<header th:insert="fragments/page_header::pageHeader"></header>
+
+<main>
+
+	<div class="container">
+		<h2>マイページ</h2>
+		
+		<table class="myPage" >
+			<tr>
+				<th>氏名</th>
+				<td>
+					<span class="familyName" th:text="${user.familyName}"/>
+					<span class="firstName" th:text="${user.firstName}"/>
+				</td>
+			</tr>
+			<tr>
+				<th>氏名ふりがな</th>
+				<td>
+					<span class="familyNameKana" th:text="${user.familyNameKana}"/>
+					<span class="firstNameKana" th:text="${user.firstNameKana}"/>
+				</td>
+			</tr>
+			<tr>
+				<th>性別</th>
+				<td>
+					<span class="gender" th:text="${user.gender == 0 ? '男性' : '女性' }"/>
+				</td>
+			</tr>
+			<tr>
+				<th>ユーザー名<br /><span class="note">（メールアドレス）</span></th>
+				<td>
+					<span class="userName" th:text="${user.userName}"/>
+				</td>
+			</tr>
+			<tr>
+				<th>パスワード</th>
+				<td>
+					<span class="password" th:value="${user.password}"/>******</span>
+				</td>
+			</tr>
+			<tr>
+				<th class="buttonArea">
+				</th>
+				<th class="buttonArea">
+					<form action="/sampleweb/history/" th:action"@{/sampleweb/history/}">
+						<button id="historyButton">購入履歴</button>
+					</form>
+				</th>
+			</tr>
+		</table>
+	
+	</div>
+
+</main>
+
+
+</body>
+</html>

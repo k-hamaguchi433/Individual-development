@@ -30,10 +30,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-ma
 	<!-- tbl_purchase_history,mst_product,mst_destinationをJOINし、必要データを抽出するSQL -->
 	<select id="findByUserId" resultType="jp.co.internous.sampleweb.model.domain.dto.PurchaseHistoryDto">
 		SELECT
-
 			purchase.purchased_at AS purchased_at,
 			product.product_name AS product_name,
-			product.price AS price,
+			purchase.price AS price,
 			purchase.product_count AS product_count,
 			destination.family_name AS family_name,
 			destination.first_name AS first_name,

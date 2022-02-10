@@ -164,6 +164,9 @@
 		</div>
 		<ul class="menu">
 			<li id="cartMenu"><a href="/sampleweb/cart/" th:href="@{/sampleweb/cart/}">カート</a></li>
+			<li id="MypageMenu" th:class="${loginSession == null || loginSession.getUserName() == null ? 'hidden' : ''}">
+				<a href="/sampleweb/mypage/" th:href="@{/sampleweb/mypage/}">マイページ</a>
+			</li>
 		</ul>
 	</nav>
 		<!-- Modal Dialog (ログインエラー) -->

@@ -110,7 +110,7 @@ public class CartController {
 		// cart.htmlから送られてきたJSON文字をjavaで処理するために、
 		// キーにJOINデータである checkedIdList と、値にjavaで使えるデータとしてMap.classをセットする。
 		// SQLにデータを送るためのListに値を格納する
-		// cartMapper.deleteById(checkedIds)の結果（1か‐1）をresultに代入
+		// cartMapper.deleteById(checkedIds)の結果（1(成功)か‐1(失敗)）をresultに代入
 		Map<String, List<Integer>> map = gson.fromJson(checkedIdList, Map.class);
 		List<Integer> checkedIds = map.get("checkedIdList");
 		

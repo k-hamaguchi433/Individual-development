@@ -7,7 +7,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import jp.co.internous.sampleweb.model.domain.MstCategory;
 import jp.co.internous.sampleweb.model.domain.MstProduct;
+import jp.co.internous.sampleweb.model.form.SearchForm;
+import jp.co.internous.sampleweb.model.mapper.MstCategoryMapper;
 import jp.co.internous.sampleweb.model.mapper.MstProductMapper;
 import jp.co.internous.sampleweb.model.session.LoginSession;
 
@@ -24,6 +27,9 @@ public class IndexController {
 
 	@Autowired
 	private LoginSession loginSession;
+	
+	@Autowired
+	private MstCategoryMapper categoryMapper;
 	
 	
 	/**
@@ -44,15 +50,58 @@ public class IndexController {
 			}
 			loginSession.setTmpUserId(tmpUserId);
 		}
+		
+		//mst_categoryからcategory_nameを取得
+		List<MstCategory> categories = categoryMapper.find();
 	
 		// 商品情報を取得
 		List<MstProduct> products = productMapper.find();
 		m.addAttribute("products",products);
+		m.addAttribute("categories",categories);
 		// page_header.htmlでsessionの変数を表示させているため、loginSessionも画面に送る。
 		m.addAttribute("loginSession",loginSession);
 		
 		return "index";
 		
+	}
+	
+	/**
+	 * 検索用
+	 * @param f
+	 * @param m
+	 * @return
+	 */
+	@RequestMapping("/searchItem")
+	public String searchItem(SearchForm f, Model m) {
+		
+		//javaでkeywordsを受け取る際にスペースを整える
+		//.replaceAll("A", "B")AをBに置き換え　.trim()文字列前後のスペースを削除
+		String keywords = f.getKeywords().replaceAll("　", " ").trim().replaceAll("\\s+", " ");
+		int categoryId = f.getCategoryId();	
+		
+		//.split("A")　A区切りで単語を分割　
+		String[] keywordsList = keywords.split(" ");	
+		
+		List<MstProduct> products = null;
+		
+		//もし、検索ワードが入力されているかつカテゴリー選択済であればfindByCategoryIdAndProductNameを実行
+		//上記以外でもし、検索ワードが入力されている場合はfindByProductNameを実行
+		//上記以外でもし、カテゴリー選択済であればfindByCategoryIdを実行
+		if(keywordsList != null && categoryId > 0){
+			products = productMapper.findByCategoryIdAndProductName(categoryId, keywordsList);
+		}else if(keywordsList != null){
+			products = productMapper.findByProductName(keywordsList);
+		}else if(categoryId > 0){
+			products = productMapper.findByCategoryId(categoryId);
+		}
+		
+		//mst_categoryからカテゴリー検索用にcategory_nameを取得
+		List<MstCategory> categories = categoryMapper.find();
+		
+		m.addAttribute("categories",categories);
+		m.addAttribute("products",products);
+		m.addAttribute("loginSession",loginSession);
+		return "index";
 	}
 	
 }

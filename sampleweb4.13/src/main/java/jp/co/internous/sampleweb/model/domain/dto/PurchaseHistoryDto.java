@@ -12,7 +12,7 @@ public class PurchaseHistoryDto {
 	private String purchasedAt;
 	// mst_product.product_name
 	private String productName;
-	// mst_product.price
+	// tbl_purchase_history.price
 	private int price;
 	// tbl_purchase_history.product_count
 	private int productCount;

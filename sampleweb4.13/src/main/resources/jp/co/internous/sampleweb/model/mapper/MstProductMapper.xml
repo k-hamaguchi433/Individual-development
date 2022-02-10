@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.co.internous.sampleweb.model.mapper.MstProductMapper">
+
+	<!-- 
+	foreach元素の属性
+	item:セット内の要素反復時の別名であり、このパラメータは必須。
+	index:listおよび配列において、indexは要素のシーケンス番号であり、mapにおいて、indexは要素のkeyであり、このパラメータはオプション。
+	collectio:foreachを行う対象として、Listオブジェクトはデフォルトではキーとして「list」を使用しています。配列オブジェクトはキーとしての代わりに「array」があります。Mapオブジェクトにはデフォルトのキーがありません。もちろん、参加時には@Param("keyName")を使ってキーを設定することができます。keyNameを設定すると、list、arrayは無効になります。パラメータの対象となるフィールドがある場合を除きます。例えば、Userに属性List idsがあれば。入参はUser対象です。このコレクション＝「ids」です。もしUserが属性Ids idsを持っているならば。そのうち、Idsは対象で、Idsは属性List idを持っています。入参はUserオブジェクトで、collection=「ids.id」
+	separator：要素間のセパレータ、例えばin（）の場合、separator="は、要素の中間に自動的に使用されます。"仕切り、カンマの手動入力によるsqlエラーを避けるために、in（1，2）のように。このパラメータはオプション。
+	close:foreachコードのクローズ記号は、一般的に、オープン=「(」と併用します。n()、values()によく使われます。このパラメータはオプション。
+	※SQLで AND OR を併用する場合は ANDの処理が優先されるため、カッコでくくることでORを優先処理させる事ができる
+	検索キーワードとして「ア　カ」を渡した場合のSQLクエリは
+	SELECT * FROM mst_product WHERE category_id = #{categoryId} AND (product_name LIKE '%ア%' OR product_name LIKE '%カ%')
+	となる
+	-->
+	<select id="findByCategoryIdAndProductName" resultType="jp.co.internous.sampleweb.model.domain.MstProduct">
+		SELECT
+			*
+		FROM 
+			mst_product
+		WHERE 
+			category_id = #{categoryId} AND (product_name LIKE 
+		<foreach item="keyword" index="index" collection="keywordsList" separator="OR product_name LIKE" close=")">
+			'%${keyword}%'
+		</foreach>
+	</select>
+	
+	<!-- 
+	foreach元素の属性
+	item:セット内の要素反復時の別名であり、このパラメータは必須。
+	index:listおよび配列において、indexは要素のシーケンス番号であり、mapにおいて、indexは要素のkeyであり、このパラメータはオプション。
+	collectio:foreachを行う対象として、Listオブジェクトはデフォルトではキーとして「list」を使用しています。配列オブジェクトはキーとしての代わりに「array」があります。Mapオブジェクトにはデフォルトのキーがありません。もちろん、参加時には@Param("keyName")を使ってキーを設定することができます。keyNameを設定すると、list、arrayは無効になります。パラメータの対象となるフィールドがある場合を除きます。例えば、Userに属性List idsがあれば。入参はUser対象です。このコレクション＝「ids」です。もしUserが属性Ids idsを持っているならば。そのうち、Idsは対象で、Idsは属性List idを持っています。入参はUserオブジェクトで、collection=「ids.id」
+	separator：要素間のセパレータ、例えばin（）の場合、separator="は、要素の中間に自動的に使用されます。"仕切り、カンマの手動入力によるsqlエラーを避けるために、in（1，2）のように。このパラメータはオプション。
+	検索キーワードとして「ア　カ」を渡した場合のSQLクエリは
+	SELECT * FROM mst_product WHERE product_name LIKE '%ア%' OR product_name LIKE '%カ%'
+	となる
+	-->
+	<select id="findByProductName" resultType="jp.co.internous.sampleweb.model.domain.MstProduct">
+		SELECT
+			*
+		FROM 
+			mst_product
+		WHERE 
+			product_name LIKE 
+		<foreach item="keyword" index="index" collection="keywordsList" separator="OR product_name LIKE" >
+			'%${keyword}%'
+		</foreach>
+	</select>
+</mapper>

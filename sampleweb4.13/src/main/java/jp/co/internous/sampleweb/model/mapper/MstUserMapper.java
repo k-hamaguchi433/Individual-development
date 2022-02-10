@@ -1,5 +1,6 @@
 package jp.co.internous.sampleweb.model.mapper;
 
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -25,6 +26,14 @@ public interface MstUserMapper {
 	MstUser FindByUserNameAndPassword(
 			@Param("userName")String userName,
 			@Param("password")String password);
+	
+	/**
+	 * idを条件にユーザー情報を取得する
+	 * @param UserId
+	 * @return マイページ用ユーザー情報
+	 */
+	@Select("SELECT * FROM mst_user WHERE id = #{id}")
+	MstUser findByUserId(@Param("id")int id);
 	
 
 }

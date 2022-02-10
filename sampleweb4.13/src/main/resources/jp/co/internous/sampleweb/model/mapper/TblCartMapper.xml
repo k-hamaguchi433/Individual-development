@@ -23,6 +23,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-ma
 			user_id = #{userId}
 		ORDER BY updated_at DESC, created_at DESC
 	</select>
+	
+	<!-- 
+	foreach元素の属性 
+	item:セット内の要素反復時の別名であり、このパラメータは必須。
+	index:listおよび配列において、indexは要素のシーケンス番号であり、mapにおいて、indexは要素のkeyであり、このパラメータはオプション。
+	collectio:foreachを行う対象として、Listオブジェクトはデフォルトではキーとして「list」を使用しています。配列オブジェクトはキーとしての代わりに「array」があります。Mapオブジェクトにはデフォルトのキーがありません。もちろん、参加時には@Param("keyName")を使ってキーを設定することができます。keyNameを設定すると、list、arrayは無効になります。パラメータの対象となるフィールドがある場合を除きます。例えば、Userに属性List idsがあれば。入参はUser対象です。このコレクション＝「ids」です。もしUserが属性Ids idsを持っているならば。そのうち、Idsは対象で、Idsは属性List idを持っています。入参はUserオブジェクトで、collection=「ids.id」
+	open:foreachコードの開始記号は、一般的に(close=「)」と併用されます。n()、values()によく使われます。このパラメータはオプション。
+	separator：要素間のセパレータ、例えばin（）の場合、separator="は、要素の中間に自動的に使用されます。"仕切り、カンマの手動入力によるsqlエラーを避けるために、in（1，2）のように。このパラメータはオプション。
+	close:foreachコードのクローズ記号は、一般的に、オープン=「(」と併用します。n()、values()によく使われます。このパラメータはオプション。
+	削除IDとして「1」と「2」を渡した場合のSQLクエリは
+	DELETE FROM tbl_cart WHERE id IN (1 ,2 )
+	となる
+	-->
 	<delete id="deleteById">
 		DELETE
 		FROM tbl_cart
