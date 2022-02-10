@@ -38,13 +38,6 @@ public interface MstProductMapper {
 	 */
 	List<MstProduct> findByProductName(@Param("keywordsList") String[] keywordsList);
 
-	/**
-	 * カテゴリIDを条件として商品情報を取得する
-	 * @param categoryId
-	 * @return 検索済商品リスト
-	 */
-	@Select("SELECT * FROM mst_product WHERE category_id = #{categoryId}")
-	List<MstProduct> findByCategoryId(@Param("categoryId") int categoryId);
 
 }
 

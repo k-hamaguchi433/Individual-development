@@ -66,10 +66,10 @@ public class IndexController {
 	}
 	
 	/**
-	 * 検索用
+	 * 商品検索し画面に返す
 	 * @param f
 	 * @param m
-	 * @return
+	 * @return トップページ
 	 */
 	@RequestMapping("/searchItem")
 	public String searchItem(SearchForm f, Model m) {
@@ -86,13 +86,10 @@ public class IndexController {
 		
 		//もし、検索ワードが入力されているかつカテゴリー選択済であればfindByCategoryIdAndProductNameを実行
 		//上記以外でもし、検索ワードが入力されている場合はfindByProductNameを実行
-		//上記以外でもし、カテゴリー選択済であればfindByCategoryIdを実行
 		if(keywordsList != null && categoryId > 0){
 			products = productMapper.findByCategoryIdAndProductName(categoryId, keywordsList);
 		}else if(keywordsList != null){
 			products = productMapper.findByProductName(keywordsList);
-		}else if(categoryId > 0){
-			products = productMapper.findByCategoryId(categoryId);
 		}
 		
 		//mst_categoryからカテゴリー検索用にcategory_nameを取得
